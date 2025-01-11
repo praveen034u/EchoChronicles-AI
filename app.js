@@ -124,7 +124,7 @@ function updateTerrainUI(worldMap) {
            if (currentPlayerX === x && currentPlayerY === y) {
               tileDiv.classList.add("player");
               const playerImage = document.createElement("img");
-              playerImage.src = "player1.gif"; // Path to player image
+              playerImage.src = "./assets/player-images/player1.gif"; // Path to player image
               playerImage.alt = "Player";
               playerImage.style.width = "100%";
               playerImage.style.height = "100%";

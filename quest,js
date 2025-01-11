@@ -1,0 +1,87 @@
+//Quest Generation Logic
+
+// Function to generate quests based on terrain features and landmarks
+function generateQuests(worldMap) {
+    const quests = [];
+
+    worldMap.forEach((row, x) => {
+        row.forEach((tile, y) => {
+            // Check if the tile is a landmark
+            if (tile.isLandmark && !tile.hasQuest) {
+                const quest = createQuestForLandmark(tile, x, y);
+                if (quest) {
+                    tile.hasQuest = true; // Mark the tile as having a quest
+                    quests.push(quest);
+                }
+            }
+        });
+    });
+
+    return quests;
+}
+
+// Function to create a quest based on a landmark's type
+function createQuestForLandmark(tile, x, y) {
+    switch (tile.landmarkType) {
+        case 'cave':
+            return {
+                description: `Explore the cave at (${x}, ${y}) and retrieve the ancient artifact hidden inside.`,
+                location: { x, y },
+                type: 'exploration',
+                rewards: {
+                    experience: 100,
+                    gold: 50,
+                },
+            };
+        case 'village':
+            return {
+                description: `Help the villagers at (${x}, ${y}) by defending their shrine from enemies.`,
+                location: { x, y },
+                type: 'defense',
+                rewards: {
+                    experience: 75,
+                    items: ['Healing Potion'],
+                },
+            };
+        case 'sunken treasure':
+            return {
+                description: `Find the hidden treasure in the lake near (${x}, ${y}).`,
+                location: { x, y },
+                type: 'treasure-hunt',
+                rewards: {
+                    experience: 150,
+                    items: ['Gold Coins', 'Rare Gem'],
+                },
+            };
+        default:
+            return null; // No quest for unknown landmark types
+    }
+}
+
+// Function to assign quests to the player when they interact with a landmark
+function assignQuestToPlayer(player, quests, playerX, playerY) {
+    quests.forEach((quest) => {
+        if (quest.location.x === playerX && quest.location.y === playerY) {
+            console.log(`Quest Assigned: ${quest.description}`);
+            player.activeQuests.push(quest);
+        }
+    });
+}
+
+// Example usage
+const player = {
+    name: 'Hero',
+    activeQuests: [],
+};
+
+// Example terrain data (from terrain generation)
+const worldMap = [
+    [
+        { type: 'grass', isLandmark: true, landmarkType: 'village', hasQuest: false },
+        { type: 'grass', isLandmark: false },
+    ],
+    [
+        { type: 'mountain', isLandmark: true, landmarkType: 'cave', hasQuest: false },
+        { type: 'water', isLandmark: true, landmarkType: 'sunken treasure', hasQuest: false },
+    ],
+];
