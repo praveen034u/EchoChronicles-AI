@@ -1,9 +1,10 @@
 let currentPlayerX = 0; // Player starts at position (0, 0)
 let currentPlayerY = 0;
 let worldMap = []; // Initialize with terrain data once it's loaded
+let player = null; // Initialize with player data once it's loaded
 
 // Function to call the generateTerrain Lambda function
-async function fetchGeneratedTerrain(playerId,  playerX, playerY, imaginaryWorld) {
+async function fetchGeneratedTerrain(player, imaginaryWorld) {
     const apiUrl = "https://nee5ghu8w7.execute-api.us-east-1.amazonaws.com/dev/generateTerrain"; // Replace with your API Gateway URL
 
     try {
@@ -13,13 +14,13 @@ async function fetchGeneratedTerrain(playerId,  playerX, playerY, imaginaryWorld
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                playerId: playerId,
-                playerX:playerX,
-                playerY:playerY,
+                playerId: player.name,
+                playerX:player.position.x,
+                playerY:player.position.y,
                 width:50,
                 height:50,
-                landmarkPercentage:0.1,
-                imaginaryWorld: "Sci-FiWorld"
+                landmarkPercentage:0.5,
+                imaginaryWorld: imaginaryWorld
             })
         });
 
@@ -219,6 +220,15 @@ function scrollToPlayer(playerX, playerY) {
     }
 }
 
+// Assign quest to the player when they reach a tile with a quest
+function assignQuestToPlayer(player, currentTile) {
+    if (currentTile.quest) {
+        player.activeQuests.push(currentTile.quest);
+        console.log(`Quest Assigned: ${currentTile.quest.description}`);
+    } else {
+        console.log("No quest available on this tile.");
+    }
+}
 
 // Function to trigger events based on terrain
 function triggerEventBasedOnTerrain(tile) {
@@ -230,6 +240,7 @@ function triggerEventBasedOnTerrain(tile) {
     {
       console.log( "Here is the quest for you :" + tile.quest.description);
       console.log( "And, once you complete the quest, you will be rewarded with some exiting stuffs!!");
+      assignQuestToPlayer(player, tile);
     }
     else if(tile.isLandmark) 
     {
@@ -247,6 +258,7 @@ function triggerEventBasedOnTerrain(tile) {
     {
                 console.log("You are walking on grass.");
     }
+    console.log("Player's Active Quests:", player.activeQuests);
 }
 
 function saveGameState() {
@@ -310,11 +322,27 @@ style.innerHTML = `
 
 document.head.appendChild(style);
 
+// Player model initialization
+function initializePlayer(name, startingX, startingY) {
+    return {
+        name: name,
+        activeQuests: [],
+        inventory: [],
+        position: { x: startingX, y: startingY },
+        experience: 0,
+        gold: 0,
+    };
+}
+
 // Example trigger when a player clicks a button
 document.getElementById("generate-terrain-button").addEventListener("click", () => {
     const playerId = "player123";  // Replace with dynamic player ID
     const playerX = "0";  // Replace with dynamic region
     const playerY = "0";  // Replace with dynamic region
+    
+    // Player model initialization
+    player = initializePlayer(playerId, playerX, playerY);
+   
     const imaginaryWorld = "Sci-FiWorld"; // Replace with dynamic world name
-    fetchGeneratedTerrain(playerId, playerX, playerY, imaginaryWorld);
+    fetchGeneratedTerrain(player, imaginaryWorld);
 });
