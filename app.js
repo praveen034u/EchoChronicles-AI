@@ -17,7 +17,8 @@ async function fetchGeneratedTerrain(playerId,  playerX, playerY) {
                 playerX:playerX,
                 playerY:playerY,
                 width:50,
-                height:50
+                height:50,
+                landmarkPercentage:0.1,
             })
         });
 
