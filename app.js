@@ -224,12 +224,12 @@ function scrollToPlayer(playerX, playerY) {
 function triggerEventBasedOnTerrain(tile) {
    if(tile.hasMerchant) 
    {
-            console.log("The area is peaceful.");
+            console.log("you found a wandering merchant!!");
    }
     else if(tile.hasQuest) 
     {
       console.log( "Here is the quest for you :" + tile.quest.description);
-      console.log( "And, you will be rewarded after completion the quest with :" + JSON.stringify(tile.quest));
+      console.log( "And, once you complete the quest, you will be rewarded with some exiting stuffs!!");
     }
     else if(tile.isLandmark) 
     {
