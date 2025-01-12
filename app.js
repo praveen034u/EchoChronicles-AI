@@ -3,7 +3,7 @@ let currentPlayerY = 0;
 let worldMap = []; // Initialize with terrain data once it's loaded
 let player = null; // Initialize with player data once it's loaded
 
-// Function to call the generateTerrain Lambda function
+//  Function to call the generateTerrain Lambda function
 async function fetchGeneratedTerrain(player, imaginaryWorld) {
     const apiUrl = "https://nee5ghu8w7.execute-api.us-east-1.amazonaws.com/dev/generateTerrain"; // Replace with your API Gateway URL
 
