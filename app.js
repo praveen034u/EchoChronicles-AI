@@ -3,7 +3,7 @@ let currentPlayerY = 0;
 let worldMap = []; // Initialize with terrain data once it's loaded
 
 // Function to call the generateTerrain Lambda function
-async function fetchGeneratedTerrain(playerId,  playerX, playerY) {
+async function fetchGeneratedTerrain(playerId,  playerX, playerY, imaginaryWorld) {
     const apiUrl = "https://nee5ghu8w7.execute-api.us-east-1.amazonaws.com/dev/generateTerrain"; // Replace with your API Gateway URL
 
     try {
@@ -19,6 +19,7 @@ async function fetchGeneratedTerrain(playerId,  playerX, playerY) {
                 width:50,
                 height:50,
                 landmarkPercentage:0.1,
+                imaginaryWorld: "Sci-FiWorld"
             })
         });
 
@@ -221,18 +222,30 @@ function scrollToPlayer(playerX, playerY) {
 
 // Function to trigger events based on terrain
 function triggerEventBasedOnTerrain(tile) {
-    switch (tile.type) {
-        case 'grass':
-            console.log("You encounter a wandering merchant!");
-            break;
-        case 'mountain':
-            console.log("You discover a hidden cave!");
-            break;
-        case 'water':
-            console.log("You find a sunken treasure!");
-            break;
-        default:
+   if(tile.hasMerchant) 
+   {
             console.log("The area is peaceful.");
+   }
+    else if(tile.hasQuest) 
+    {
+      console.log( "Here is the quest for you :" + tile.quest.description);
+      console.log( "And, you will be rewarded after completion the quest with :" + JSON.stringify(tile.quest));
+    }
+    else if(tile.isLandmark) 
+    {
+                console.log("You found a landmark! it's a "+ tile.landmarkType);
+    }
+    else if(tile.type === "water") 
+    {
+                console.log("You are swimming!");
+    }
+    else if(tile.type === "mountain") 
+    {
+                console.log("You are climbing a mountain!");
+    }
+    else 
+    {
+                console.log("You are walking on grass.");
     }
 }
 
@@ -256,7 +269,7 @@ function revealTerrain(playerX, playerY, worldMap, revealRadius = 3) {
             if (worldMap[x] && worldMap[x][y]) {
                 worldMap[x][y].discovered = true;
                 count= count+1;
-                //console.log("x-axis="+x+" y axis="+ y);
+                console.log("x-axis="+x+" y axis="+ y);
             }
         }
     }
@@ -302,6 +315,6 @@ document.getElementById("generate-terrain-button").addEventListener("click", () 
     const playerId = "player123";  // Replace with dynamic player ID
     const playerX = "0";  // Replace with dynamic region
     const playerY = "0";  // Replace with dynamic region
-
-    fetchGeneratedTerrain(playerId, playerX, playerY);
+    const imaginaryWorld = "Sci-FiWorld"; // Replace with dynamic world name
+    fetchGeneratedTerrain(playerId, playerX, playerY, imaginaryWorld);
 });
