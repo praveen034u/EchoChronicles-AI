@@ -26,16 +26,51 @@
             max-width: 1100px;
             margin: 20px auto;
             }
+        #console-popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 14px;
+            padding: 10px;
+            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        #console-popup p {
+            margin: 5px 0;
+        }
            
       
     </style>
 </head>
+<div id="console-popup" style="position: fixed; bottom: 0; left: 0; width: 100%; max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.8); color: white; font-family: Arial, sans-serif; font-size: 14px; padding: 10px; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);"></div>
 <body>
-    <div class="controls">
-        <button id="generate-terrain-button">Generate Terrain</button>
+    <div id="terrain-container">
+        <div id="control1">
+            <h1>
+                "Welcome " + "player1" + " to Echo Chronicles Game - Driven by Imersive AI Experiences!"
+            </h1>
+            <p>
+                "We have imaginary world to explore. Please select one from below list!"
+            </p>
+           
+        <div id="terrain-worldType">
+            <label><input type="radio" name="worldType" value="Fantasy" onclick="doSelection()"> Fantasy</label><br>
+            <label><input type="radio" name="worldType" value="SciFi" onclick="doSelection()"> SciFi</label><br>
+            <label><input type="radio" name="worldType" value="PostApocalyptic" onclick="doSelection()"> PostApocalyptic</label>
+        </div>
+ 
+        <div>
+            <button id="generate-terrain-button" disabled="true">Generate Terrain</button>
+        </div>
+        </div>
+ 
     </div>
-    <div id="terrain-container"></div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="./app.js"></script>
 </body>
 </html>

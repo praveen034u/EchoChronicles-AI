@@ -3,6 +3,12 @@ let currentPlayerY = 0;
 let worldMap = []; // Initialize with terrain data once it's loaded
 let player = null; // Initialize with player data once it's loaded
 
+function doSelection(){
+    $('#generate-terrain-button').attr('disabled', false);
+    //alert($('#terrain-worldType li.selected').attr('data-input'));
+ 
+}
+
 //  Function to call the generateTerrain Lambda function
 async function fetchGeneratedTerrain(player, imaginaryWorld) {
     const apiUrl = "https://nee5ghu8w7.execute-api.us-east-1.amazonaws.com/dev/generateTerrain"; // Replace with your API Gateway URL
@@ -230,35 +236,115 @@ function assignQuestToPlayer(player, currentTile) {
     }
 }
 
+//Below function to be used for reference.
+function handleQuestDecision(decision) {
+    let tile = worldMap[currentPlayerX][currentPlayerY];
+    if (decision === "accepted") {
+        console.log("Player accepted the quest.");
+        assignQuestToPlayer(player, tile);
+        // Add logic for starting the quest
+    } else if (decision === "declined") {
+        console.log("You have declined the quest, you can continue with your game!");
+        // Add logic for declining the quest
+    }
+}
+
+function triggerEventBasedOnTerrain_anurag(tile) {
+    switch (tile.type) {
+        case "grass":
+            logMessageToPopup("You encounter a wandering merchant offering a quest. Do you accept?", true, handleQuestDecision);
+            break;
+        case "mountain":
+            logMessageToPopup("You discover a hidden cave. Do you want to explore the cave?", true, handleQuestDecision);
+            break;
+        case "water":
+            logMessageToPopup("You find a sunken treasure. Do you want to dive for it?", true, handleQuestDecision);
+            break;
+        default:
+            logMessageToPopup("The area is peaceful.");
+    }
+}
+
 // Function to trigger events based on terrain
 function triggerEventBasedOnTerrain(tile) {
-   if(tile.hasMerchant) 
-   {
-            console.log("you found a wandering merchant!!");
-   }
-    else if(tile.hasQuest) 
+    if(tile.hasMerchant) 
     {
-      console.log( "Here is the quest for you :" + tile.quest.description);
-      console.log( "And, once you complete the quest, you will be rewarded with some exiting stuffs!!");
-      assignQuestToPlayer(player, tile);
+             //tbd console.log("you found a wandering merchant!!");
+             logMessageToPopup("you found a wandering merchant!!");
     }
-    else if(tile.isLandmark) 
-    {
-                console.log("You found a landmark! it's a "+ tile.landmarkType);
+     else if(tile.hasQuest) 
+     {
+       // tbd console.log( "Here is the quest for you :\n" + tile.quest.description);
+       const questMsg = "Here is the quest for you :" + tile.quest.description + 
+       "\n once you complete the quest, you will be rewarded with some exiting stuffs!!";
+       logMessageToPopup(questMsg + "\n Do you accept? ", true, handleQuestDecision);
+     }
+     else if(tile.isLandmark) 
+     {
+                 logMessageToPopup("You found a landmark! it's a "+ tile.landmarkType);
+     }
+     else if(tile.type === "water") 
+     {
+                 logMessageToPopup("You are swimming!");
+     }
+     else if(tile.type === "mountain") 
+     {
+                 logMessageToPopup("You are climbing a mountain!");
+     }
+     else 
+     {
+                 logMessageToPopup("You are walking on grass.");
+     }
+     console.log("Player's Active Quests Count:", player.activeQuests.length);
+ }
+ 
+
+function logMessageToPopup(message, showQuestButtons = false, questCallback = null) {
+    const consolePopup = document.getElementById("console-popup");
+
+    if (!consolePopup) {
+        console.error("Console popup element not found!");
+        return;
     }
-    else if(tile.type === "water") 
-    {
-                console.log("You are swimming!");
+
+    // Clear the current message
+    consolePopup.innerHTML = "";
+
+    // Create a paragraph element for the main message
+    const messageElement = document.createElement("p");
+    messageElement.textContent = message;
+
+    // Append the main message
+    consolePopup.appendChild(messageElement);
+
+    // If quest buttons are needed, create Accept and Decline buttons
+    if (showQuestButtons) {
+        const buttonContainer = document.createElement("div");
+        buttonContainer.style.marginTop = "10px";
+
+        // Accept button
+        const acceptButton = document.createElement("button");
+        acceptButton.textContent = "Accept Quest";
+        acceptButton.style.marginRight = "10px";
+        acceptButton.onclick = () => {
+            if (questCallback) questCallback("accepted");
+            logMessageToPopup("You accepted the quest!");
+        };
+
+        // Decline button
+        const declineButton = document.createElement("button");
+        declineButton.textContent = "Decline Quest";
+        declineButton.onclick = () => {
+            if (questCallback) questCallback("declined");
+            logMessageToPopup("You declined the quest.");
+        };
+
+        buttonContainer.appendChild(acceptButton);
+        buttonContainer.appendChild(declineButton);
+
+        // Append buttons to the popup
+        consolePopup.appendChild(buttonContainer);
     }
-    else if(tile.type === "mountain") 
-    {
-                console.log("You are climbing a mountain!");
-    }
-    else 
-    {
-                console.log("You are walking on grass.");
-    }
-    console.log("Player's Active Quests:", player.activeQuests);
 }
 
 function saveGameState() {
@@ -346,3 +432,27 @@ document.getElementById("generate-terrain-button").addEventListener("click", () 
     const imaginaryWorld = "Sci-FiWorld"; // Replace with dynamic world name
     fetchGeneratedTerrain(player, imaginaryWorld);
 });
+
+// Anurag for reference.
+// document.addEventListener("DOMContentLoaded", () => {
+//     function logMessageToPopup(message) {
+//         const consolePopup = document.getElementById("console-popup");
+//         if (!consolePopup) {
+//             console.error("Console popup element not found!");
+//             return;
+//         }
+
+//         const messageElement = document.createElement("p");
+//         messageElement.textContent = message;
+
+//         consolePopup.appendChild(messageElement);
+
+//         // Scroll to the bottom for the latest message
+//         consolePopup.scrollTop = consolePopup.scrollHeight;
+//     }
+
+//     // Example: Log a message when the button is clicked
+//     document.getElementById("generate-terrain-button").addEventListener("click", () => {
+//         logMessageToPopup("Generating terrain...");
+//     });
+// });
