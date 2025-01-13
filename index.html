@@ -13,49 +13,75 @@
             cursor: pointer;
         }
         .controls {
-            text-align: center;
+            text-align: left;
             margin-bottom: 20px;
         }
         #terrain-container {
-              border: 5px solid rgb(1, 2, 18);
-              justify-content: center;
-             align-items: center;
-              display: grid;
+              border: 3px solid rgb(116, 36, 105);
+             float: left;     
+             display: block;
+             height: 1100px;
+             width: 1100px;
             gap: 1px;
             padding: 10px;
-            max-width: 1100px;
+            max-width: 1100px; 
             margin: 20px auto;
             }
+            #Game-Panel
+            {
+                border: 3px solid rgb(192, 122, 17);
+                float: right;
+                display: block;
+                height: 1100px;
+                width: 650px;
+                gap: 1px;
+                padding: 10px;
+                max-width: 1100px;
+                margin: 20px auto;
+            }
         #console-popup {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            
+            width: 630px;
+            margin-top: 10px;
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
             font-size: 14px;
             padding: 10px;
             box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
-            max-height: 150px;
+            max-height: 400px; 
             overflow-y: auto;
             z-index: 1000;
         }
         #console-popup p {
             margin: 5px 0;
         }
-           
+        #generate-terrain-button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+                #generate-terrain-resume-button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
       
     </style>
 </head>
-<div id="console-popup" style="position: fixed; bottom: 0; left: 0; width: 100%; max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.8); color: white; font-family: Arial, sans-serif; font-size: 14px; padding: 10px; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);"></div>
+
 <body>
+    <div id="terrain-title" style="text-align: center; font-size: 28px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 20px;">
+        Echo Chronicles Game - Explore the imaginary world with immersive AI Experiences!
+    </div>
+    <div id="imaginaryWorld"></div>
     <div id="terrain-container">
-        <div id="control1">
-            <h1>
-                "Welcome " + "player1" + " to Echo Chronicles Game - Driven by Imersive AI Experiences!"
-            </h1>
+        
+        <div id="control" style="background-color: #f9f9f9; border: 1px solid #ccc; padding: 10px;">
+                <div id="welcome-title" style="font-size: 20px; font-weight: bold; color: rgb(0, 102, 204);">
+                    Welcome " + "player1" + "!!
+                </div>
             <p>
-                "We have imaginary world to explore. Please select one from below list!"
+                Please select the imaginary world you would like to explore-
             </p>
            
         <div id="terrain-worldType">
@@ -64,12 +90,58 @@
             <label><input type="radio" name="worldType" value="PostApocalyptic" onclick="doSelection()"> PostApocalyptic</label>
         </div>
  
-        <div>
-            <button id="generate-terrain-button" disabled="true">Generate Terrain</button>
+        <div style="padding-top: 20px;">
+            <button id="generate-terrain-button" disabled="true" >Click to generate the world</button>
+            <button id="generate-terrain-resume-button">Click to resume the previous game</button>
         </div>
         </div>
- 
     </div>
+    <div id="Game-Panel" >
+        <div id="Game-Panel-Controls">
+            <div id="Game-reward-pannel">
+                <div style="font-size: 16px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 10px;">
+                    Your Game Rewards: explore and earn as you complete the quests!!
+                </div>
+        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; border: 1px solid rgb(118, 158, 133);">
+            <div style="text-align: center; margin: 10px;">
+            <img src="./assets/rewards/gold1.jpeg" alt="gold" style="width: 80px; height: 80px;">
+            <div>Gold Count= 0</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+            <img src="./assets/rewards/rareGem.jpeg" alt="Rare Gems" style="width: 80px; height: 80px;">
+            <div>Rare Gems Count= 0</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+            <img src="./assets/rewards/healingPotion1.jpeg" alt="Healing posion" style="width: 80px; height: 80px;">
+            <div id="healing-potion-count">Healing posion Count= 0</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+            <img src="./assets/rewards/fishingRod.png" alt="Fishing Rods" style="width: 80px; height: 80px;">
+            <div>Fishing Rods Count= 0</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+            <img src="./assets/rewards/experiences.png" alt="Experiences" style="width: 80px; height: 80px;">
+            <div>Experiences Count= 0</div>
+            </div>
+        </div>
+            </div>
+            <div id="game-action-pannel" style="padding-top: 20px; ">
+                <div style="font-size: 16px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 10px;">
+                    Game Action:
+                </div>
+                    <button id="generate-terrain-button">Save the Current Game</button>
+                    <button id="generate-terrain-resume-button">Exit the Game</button>
+                    <button id="generate-terrain-resume-button">Flash the Quest tiles</button>
+            </div> 
+            <div id="game-log-pannel" style="padding-top:20px">
+                <div style="font-size: 16px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 10px;">
+                    Game Log:
+                    <div id="console-popup"></div>
+                </div>
+            </div> 
+    </div>
+    </div>
+       
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="./app.js"></script>
 </body>

@@ -2,12 +2,12 @@ let currentPlayerX = 0; // Player starts at position (0, 0)
 let currentPlayerY = 0;
 let worldMap = []; // Initialize with terrain data once it's loaded
 let player = null; // Initialize with player data once it's loaded
+let imaginaryWorld = "fantasy"; // Default to fantasy world
 
-function doSelection(){
-    $('#generate-terrain-button').attr('disabled', false);
-    //alert($('#terrain-worldType li.selected').attr('data-input'));
- 
-}
+// Find the healingPotion count
+const healingPotion = player?.inventory.find(item => item.name === 'healingPotion');
+const healingPotionCount = healingPotion ? healingPotion.count : 0;
+document.getElementById('healing-potion-count').innerText = `Healing posion Count= ${healingPotionCount}`;
 
 //  Function to call the generateTerrain Lambda function
 async function fetchGeneratedTerrain(player, imaginaryWorld) {
@@ -58,29 +58,20 @@ function initializeGame(terrain) {
 function updateTerrainUI(worldMap) {
     const terrainContainer = document.getElementById("terrain-container");
     terrainContainer.innerHTML = "";
-
-                // display: grid;
-                // gap: 1px;
-                // background: #ccc;
-                // padding: 10px;
-                // max-width: 800px;
-                // margin: 20 auto;
-                // border: 2px solid rgba(0,0,0,0.1);
-                //   margin: 0 auto;
-
      // Add CSS if not already present
      if (!document.getElementById('terrain-styles')) {
         const style = document.createElement('style');
         style.id = 'terrain-styles';
         style.textContent = `
             .terrain-container {
-              border: 5px solid black;
               display: flex;
               justify-content: center;
               align-items: center;
               overflow: auto;
               max-height: 80vh;
               max-width: 80vw;
+              height: 1100px;
+              padding-left: 100px;
             }
             .terrain-row {
                 display: flex;
@@ -98,16 +89,10 @@ function updateTerrainUI(worldMap) {
                 background-color: #333;
                 opacity: 0.5;
             }
-            img {
-              position: absolute;
-              top: 0;
-              left: 0;
-    }   
+             
         `;
         document.head.appendChild(style);
     }
-   
-   
 
     terrainContainer.innerHTML = ""; // Clear previous map
 
@@ -167,7 +152,29 @@ document.addEventListener("keydown", (event) => {
         default:
             return; // Ignore other keys
     }
+        // log limit to 5 - Start
+        // Reference to the log container element
+        const logContainer = document.getElementById("log-container");
 
+        // Function to log messages to the bottom log panel
+        function logMessageToPopup(message) {
+            // Create a new paragraph element for the message
+            const messageElement = document.createElement("p");
+            messageElement.textContent = message;
+    
+            // Append the new message
+            logContainer.appendChild(messageElement);
+    
+            // Keep only the latest 5 log entries
+            if (logContainer.children.length > 5) {
+                logContainer.removeChild(logContainer.firstChild); // Remove the oldest log entry
+            }
+    
+            // Scroll the log panel to the bottom to show the latest log
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+    // log limit to 5 - end
+    
     // Assume currentPlayerX, currentPlayerY, and worldMap are globally accessible
     const { playerX, playerY } = movePlayer(currentPlayerX, currentPlayerY, direction, worldMap);
     currentPlayerX = playerX;
@@ -295,9 +302,29 @@ function triggerEventBasedOnTerrain(tile) {
      {
                  logMessageToPopup("You are walking on grass.");
      }
+     checkForQuestCompletion(player);
      console.log("Player's Active Quests Count:", player.activeQuests.length);
  }
  
+function checkForQuestCompletion(player) {
+    player.activeQuests.forEach((quest, index) => {
+          console.log("Quest locationX="+quest.location.x+" Quest locationY="+quest.location.y);
+          console.log("Player locationX="+currentPlayerX+" Player locationY="+currentPlayerY);
+
+        if (quest.location.x === currentPlayerX && quest.location.y === currentPlayerY) {
+            logMessageToPopup(`You completed the quest: ${quest.description}`);
+            player.activeQuests.splice(index, 1); // Remove the completed quest
+            player.experience += quest.rewards.experience;
+           
+        if (quest.rewards.gold === undefined) {
+            player.inventory.push(...quest.rewards.items);
+            logMessageToPopup(`You received items: ${quest.rewards.items.join(', ')}`);
+        } else {
+            player.gold += quest.rewards.gold;
+            logMessageToPopup(`You received ${quest.rewards.gold} gold and ${quest.rewards.experience} experience.`);
+        }
+}});
+}
 
 function logMessageToPopup(message, showQuestButtons = false, questCallback = null) {
     const consolePopup = document.getElementById("console-popup");
@@ -306,9 +333,6 @@ function logMessageToPopup(message, showQuestButtons = false, questCallback = nu
         console.error("Console popup element not found!");
         return;
     }
-
-    // Clear the current message
-    consolePopup.innerHTML = "";
 
     // Create a paragraph element for the main message
     const messageElement = document.createElement("p");
@@ -345,6 +369,8 @@ function logMessageToPopup(message, showQuestButtons = false, questCallback = nu
         // Append buttons to the popup
         consolePopup.appendChild(buttonContainer);
     }
+  // Scroll to the bottom for the latest message
+    consolePopup.scrollTop = consolePopup.scrollHeight;
 }
 
 function saveGameState() {
@@ -399,11 +425,7 @@ style.innerHTML = `
     .row {
         display: flex;
     }
-    img {
-        position: absolute;
-        top: 0;
-        left: 0;
-    }`
+    `
 ;
 
 document.head.appendChild(style);
@@ -421,38 +443,31 @@ function initializePlayer(name, startingX, startingY) {
 }
 
 // Example trigger when a player clicks a button
-document.getElementById("generate-terrain-button").addEventListener("click", () => {
+document.getElementById("generate-terrain-button").addEventListener("click", async () => {
+   
+    $('#control').hide();
+    const terrainContainer = document.getElementById("terrain-container");
+    const worldGenImage = document.createElement("img");
+    worldGenImage.src = "./assets/world_generation.gif"; // Path to the world generation image
+    worldGenImage.alt = "World Generation";
+    worldGenImage.style.width ="300px";
+    worldGenImage.style.height ="300px";
+    worldGenImage.style.marginTop= "150px";
+    worldGenImage.style.marginLeft = "380px";
+    terrainContainer.appendChild(worldGenImage);
+
     const playerId = "player123";  // Replace with dynamic player ID
     const playerX = "0";  // Replace with dynamic region
     const playerY = "0";  // Replace with dynamic region
     
     // Player model initialization
     player = initializePlayer(playerId, playerX, playerY);
-   
-    const imaginaryWorld = "Sci-FiWorld"; // Replace with dynamic world name
-    fetchGeneratedTerrain(player, imaginaryWorld);
+    
+    await fetchGeneratedTerrain(player, imaginaryWorld);
+    $('#game-action-pannel').show();
 });
 
-// Anurag for reference.
-// document.addEventListener("DOMContentLoaded", () => {
-//     function logMessageToPopup(message) {
-//         const consolePopup = document.getElementById("console-popup");
-//         if (!consolePopup) {
-//             console.error("Console popup element not found!");
-//             return;
-//         }
-
-//         const messageElement = document.createElement("p");
-//         messageElement.textContent = message;
-
-//         consolePopup.appendChild(messageElement);
-
-//         // Scroll to the bottom for the latest message
-//         consolePopup.scrollTop = consolePopup.scrollHeight;
-//     }
-
-//     // Example: Log a message when the button is clicked
-//     document.getElementById("generate-terrain-button").addEventListener("click", () => {
-//         logMessageToPopup("Generating terrain...");
-//     });
-// });
+function doSelection(){
+    imaginaryWorld = $('input[name="worldType"]:checked').val();
+    $('#generate-terrain-button').attr('disabled', false);
+}
