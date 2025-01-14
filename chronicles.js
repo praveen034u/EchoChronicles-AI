@@ -539,7 +539,7 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     $('#game-log-pannel').show();
 });
 
-document.getElementById("flash-terrain-button").addEventListener("click", async () => {
+document.getElementById("exit-terrain-button").addEventListener("click", async () => {
     location.reload(); // Refresh the page
 });
 
