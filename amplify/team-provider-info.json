@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-echochroniclesai-dev-5e724-authRole",
+      "UnauthRoleArn": "arn:aws:iam::381492073135:role/amplify-echochroniclesai-dev-5e724-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::381492073135:role/amplify-echochroniclesai-dev-5e724-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-echochroniclesai-dev-5e724-deployment",
+      "UnauthRoleName": "amplify-echochroniclesai-dev-5e724-unauthRole",
+      "StackName": "amplify-echochroniclesai-dev-5e724",
+      "StackId": "arn:aws:cloudformation:us-east-1:381492073135:stack/amplify-echochroniclesai-dev-5e724/95929410-d251-11ef-a292-0affd493ed95",
+      "AmplifyAppId": "d349iu9ksugzer"
+    },
+    "categories": {
+      "auth": {
+        "echochroniclesai817ee843": {}
+      }
+    }
+  }
+}

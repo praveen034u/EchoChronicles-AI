@@ -7,27 +7,16 @@ let fishingRodsCount = 0;
 let rareGemsCount = 0;
 let healingPotionCount = 0;
 let goldCount = 0;
-const playerId = sessionStorage.getItem("uid");
+const playerId = sessionStorage.getItem("userId");
+const playerName = sessionStorage.getItem("userFullName");
+const sessionId = sessionStorage.getItem("sessionId");
+const s3assets = "https://chronicles-ai-assests.s3.us-east-1.amazonaws.com/assets"; // S3 bucket URL
+
+document.getElementById("welcome-title").innerText = "Welcome "+playerName+"!";
 
 // Initialize timer to 10 minutes (600 seconds)
 let timeLeft = 600;  // 10 minutes in seconds
 let experiencesCount = 0;
-
-// Mock items for player inventory
-player = {
-    name: "player123",
-    activeQuests: [],
-    inventory: [
-         'Healing Potion',
-         'Healing Potion' ,
-         'Fishing Rod',
-         'Rare Gem',
-    ],
-    position: { x: 0, y: 0 },
-    experience: 20,
-    gold: 100
-};
-
 
 
 // Function to start and update the timer
@@ -68,7 +57,7 @@ async function fetchGeneratedTerrain(player, imaginaryWorld) {
             },
             body: JSON.stringify({
             player: player,
-            sessionId: "23232",
+            sessionId: sessionId,
             width: 50,
             height: 50,
             landmarkPercentage: 0.5,
@@ -168,7 +157,7 @@ function updateTerrainUI(worldMap) {
            if (currentPlayerX === x && currentPlayerY === y) {
               tileDiv.classList.add("player");
               const playerImage = document.createElement("img");
-              playerImage.src = "./assets/player-images/player1.gif"; // Path to player image
+              playerImage.src = s3assets+"/player-images/player1.gif"; // Path to player image
               playerImage.alt = "Player";
               playerImage.style.width = "100%";
               playerImage.style.height = "100%";
@@ -530,7 +519,7 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     $('#control').hide();
     const terrainContainer = document.getElementById("terrain-container");
     const worldGenImage = document.createElement("img");
-    worldGenImage.src = "./assets/world_generation.gif"; // Path to the world generation image
+    worldGenImage.src = s3assets+"/world_generation.gif"; // Path to the world generation image
     worldGenImage.alt = "World Generation";
     worldGenImage.style.width ="300px";
     worldGenImage.style.height ="300px";
@@ -538,7 +527,7 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     worldGenImage.style.marginLeft = "35%";
     terrainContainer.appendChild(worldGenImage);
 
-    const playerId = "player123";  // Replace with dynamic player ID
+    const playerId = playerId;  // Replace with dynamic player ID
     const playerX = "0";  // Replace with dynamic region
     const playerY = "0";  // Replace with dynamic region
     
