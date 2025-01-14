@@ -1,6 +1,5 @@
 let currentPlayerX = 0; // Player starts at position (0, 0)
 let currentPlayerY = 0;
-let worldMap = []; // Initialize with terrain data once it's loaded
 let player = null; // Initialize with player data once it's loaded
 let imaginaryWorld = "fantasy"; // Default to fantasy world
 
@@ -8,7 +7,7 @@ let fishingRodsCount = 0;
 let rareGemsCount = 0;
 let healingPotionCount = 0;
 let goldCount = 0;
-const receivedString = sessionStorage.getItem("uid");
+const playerId = sessionStorage.getItem("uid");
 
 // Initialize timer to 10 minutes (600 seconds)
 let timeLeft = 600;  // 10 minutes in seconds
@@ -297,7 +296,7 @@ function assignQuestToPlayer(player, currentTile) {
 
 //handle quest decision
 function handleQuestDecision(decision) {
-    worldMap=JSON.parse(sessionStorage.getItem('worldMap'));
+    let worldMap=JSON.parse(sessionStorage.getItem('worldMap'));
     let tile = worldMap[currentPlayerX][currentPlayerY];
     if (decision === "accepted") {
         console.log("Player accepted the quest.");
