@@ -550,7 +550,7 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     worldGenImage.style.width ="300px";
     worldGenImage.style.height ="300px";
     worldGenImage.style.marginTop= "150px";
-    worldGenImage.style.marginLeft = "380px";
+    worldGenImage.style.marginLeft = "35%";
     terrainContainer.appendChild(worldGenImage);
 
     const playerId = "player123";  // Replace with dynamic player ID
