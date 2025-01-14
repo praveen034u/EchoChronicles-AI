@@ -65,16 +65,14 @@ async function fetchGeneratedTerrain(player, imaginaryWorld) {
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+            "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                playerId: player.name,
-                playerX:player.position.x,
-                playerY:player.position.y,
-                width:50,
-                height:50,
-                landmarkPercentage:0.5,
-                imaginaryWorld: imaginaryWorld
+            player: player,
+            width: 50,
+            height: 50,
+            landmarkPercentage: 0.5,
+            imaginaryWorld: imaginaryWorld
             })
         });
 
