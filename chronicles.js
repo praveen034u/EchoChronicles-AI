@@ -527,7 +527,6 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     worldGenImage.style.marginLeft = "35%";
     terrainContainer.appendChild(worldGenImage);
 
-    const playerId = playerId;  // Replace with dynamic player ID
     const playerX = "0";  // Replace with dynamic region
     const playerY = "0";  // Replace with dynamic region
     
@@ -540,7 +539,11 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     $('#game-log-pannel').show();
 });
 
-document.getElementById("resume-terrain-button").addEventListener("click", async () => {
+document.getElementById("flash-terrain-button").addEventListener("click", async () => {
+    location.reload(); // Refresh the page
+});
+
+document.getElementById("flash-terrain-button").addEventListener("click", async () => {
 
     // Flash tiles with quests for 5 seconds
     const questTiles = [];
