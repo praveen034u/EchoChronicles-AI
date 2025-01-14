@@ -69,10 +69,12 @@ async function fetchGeneratedTerrain(player, imaginaryWorld) {
             },
             body: JSON.stringify({
             player: player,
+            sessionId: "23232",
             width: 50,
             height: 50,
             landmarkPercentage: 0.5,
-            imaginaryWorld: imaginaryWorld
+            imaginaryWorld: imaginaryWorld,
+            prompt: null
             })
         });
 
@@ -117,9 +119,9 @@ function updateTerrainUI(worldMap) {
               justify-content: center;
               align-items: center;
               overflow: auto;
-              max-height: 80vh;
-              max-width: 80vw;
-              height: 1100px;
+              max-height: 90vh;
+              max-width: 65%;
+              height: 1200px;
               padding-left: 100px;
             }
             .terrain-row {
@@ -293,8 +295,9 @@ function assignQuestToPlayer(player, currentTile) {
     }
 }
 
-//Below function to be used for reference.
+//handle quest decision
 function handleQuestDecision(decision) {
+    worldMap=JSON.parse(sessionStorage.getItem('worldMap'));
     let tile = worldMap[currentPlayerX][currentPlayerY];
     if (decision === "accepted") {
         console.log("Player accepted the quest.");
@@ -306,30 +309,13 @@ function handleQuestDecision(decision) {
     }
 }
 
-function triggerEventBasedOnTerrain_anurag(tile) {
-    switch (tile.type) {
-        case "grass":
-            logMessageToPopup("You encounter a wandering merchant offering a quest. Do you accept?", true, handleQuestDecision);
-            break;
-        case "mountain":
-            logMessageToPopup("You discover a hidden cave. Do you want to explore the cave?", true, handleQuestDecision);
-            break;
-        case "water":
-            logMessageToPopup("You find a sunken treasure. Do you want to dive for it?", true, handleQuestDecision);
-            break;
-        default:
-            logMessageToPopup("The area is peaceful.");
-    }
-}
-
 // Function to trigger events based on terrain
 function triggerEventBasedOnTerrain(tile) {
     if(tile.hasMerchant) 
     {
-             //tbd console.log("you found a wandering merchant!!");
              logMessageToPopup("you found a wandering merchant!!");
     }
-     else if(tile.hasQuest) 
+    if(tile.hasQuest) 
      {
        // tbd console.log( "Here is the quest for you :\n" + tile.quest.description);
        const questMsg = "Here is the quest for you :" + tile.quest.description + 
@@ -342,15 +328,15 @@ function triggerEventBasedOnTerrain(tile) {
      }
      else if(tile.type === "water") 
      {
-                 logMessageToPopup("You are swimming! Your current position is (" + currentPlayerX + " " + currentPlayerY + ")");
+                 logMessageToPopup("You are swimming! Your current position is (" + currentPlayerY + " " + currentPlayerX + ")");
      }
      else if(tile.type === "mountain") 
      {
-                 logMessageToPopup("You are climbing a mountain! Your current position is (" + currentPlayerX + " " + currentPlayerY + ")");
+                 logMessageToPopup("You are climbing a mountain! Your current position is (" + currentPlayerY + " " + currentPlayerX + ")");
      }
      else 
      {
-                 logMessageToPopup("You are walking on grass! Your current position is (" + currentPlayerX + " " + currentPlayerY + ")");
+                 logMessageToPopup("You are walking on grass! Your current position is (" + currentPlayerY + " " + currentPlayerX + ")");
      }
      checkForQuestCompletion(player);
      console.log("Player's Active Quests Count:", player.activeQuests.length);
@@ -358,10 +344,10 @@ function triggerEventBasedOnTerrain(tile) {
  
 function checkForQuestCompletion(player) {
     player.activeQuests.forEach((quest, index) => {
-          console.log("Quest locationX="+quest.location.x+" Quest locationY="+quest.location.y);
-          console.log("Player locationX="+currentPlayerX+" Player locationY="+currentPlayerY);
+          console.log("Quest locationX="+quest.location.calcX+" Quest locationY="+quest.location.calcY);
+          console.log("Player locationX="+currentPlayerY+" Player locationY="+currentPlayerX);
 
-        if (quest.location.x === currentPlayerX && quest.location.y === currentPlayerY) {
+        if (quest.location.calcX === currentPlayerY && quest.location.calcY === currentPlayerX) {
             logMessageToPopup(`You completed the quest: ${quest.description}`);
             player.activeQuests.splice(index, 1); // Remove the completed quest
             player.experience += quest.rewards.experience;
@@ -561,6 +547,7 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     player = initializePlayer(playerId, playerX, playerY);
     
     await fetchGeneratedTerrain(player, imaginaryWorld);
+    saveGameState();
     $('#game-action-pannel').show();
     $('#game-log-pannel').show();
 });
