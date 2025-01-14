@@ -3,60 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/aws-amplify/dist/aws-amplify.min.js"></script>
-    <title>Welcome to Echo Chronicles Game</title>
+    <title>Sign Up / Sign In</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .form-container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
-        input {  padding: 10px; margin: 10px 0; width: 200px; display: block; margin-bottom: 10px; }
-        button { padding: 10px; width:80px ;background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        input { padding: 10px; margin: 10px 0; width: 200px; display: block; margin-bottom: 10px; }
+        button { padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
         button:hover { background-color: #45a049; }
         .error { color: red; font-size: 0.9em; }
         .success { color: green; font-size: 0.9em; }
     </style>
 </head>
 <body>
-    <h1>Echo Chronicles AI Game</h1>
+
+    <h2>Echo Chronicles AI Game</h2>
+
     <div class="form-container">
         <h3 id="form-title">Sign Up</h3>
         <form id="auth-form">
-    <div id="signup" >
-        <input id="signup-username"  type="text" placeholder="Username" required />
-        <input id="signup-password"   type="password" placeholder="Password" required />
-        <input id="signup-email"   type="email" placeholder="Email" required />
-        <input id="signup-name"  type="text" placeholder="FullName" required />
-        <input id="signup-given_name"  type="text" placeholder="NickName" required />
-        <input id="signup-birthdate"   type="text" placeholder="BirthDate" required />
-        <input id="signup-phone_number"  type="text" placeholder="PhoneNumber" required />
-        <p id="phone-error" class="error" style="display: none;">Invalid phone number format. Please use +1234567890 format.</p>
-        <input id="signup-gender"  type="text" placeholder="gender" required />
-      
-        <button onclick="signUp()">Sign Up</button>
+            <input type="text" id="username" placeholder="Username" required />
+            <input type="password" id="password" placeholder="Password" required />
+            <div id="password-confirmation-container" style="display: hidden;">
+                <input type="password" id="password-confirmation" placeholder="Confirm Password" required />
+            </div>
+            <button type="submit">Submit</button>
+            <p id="error-message" class="error"></p>
+            <p id="success-message" class="success"></p>
+        </form>
+        <p id="toggle-text" style="text-align: center; cursor: pointer; color: #007BFF;">Already have an account? Sign In</p>
     </div>
 
-    <div id="confirm-signup" style="display: none;">
-        <h2>Confirm Sign Up</h2>
-        <input id="confirm-username" type="text" placeholder="Username" required />
-        <input id="confirm-code" type="text" placeholder="Confirmation Code" required  />
-        <button onclick="confirmSignUp()">Confirm</button>
-    </div>
-
-    <div id="signin" style="display: none;">
-        <input id="signin-username" type="text" placeholder="Username" required  />
-        <input id="signin-password" type="password" placeholder="Password" required  />
-        <button onclick="signIn()">Sign In</button>
-    </div>
-
-    <div id="welcome" style="display: none;">
-        <p id="welcome-message"></p>
-        <button onclick="signOut()">Sign Out</button>
-    </div>
-    <p id="error-message" class="error"></p>
-    <p id="success-message" class="success"></p>
-</form>
-<p id="toggle-text" style="text-align: center;padding-top: 20px ;cursor: pointer; color: #007BFF;">Already have an account? Sign In</p>
-</div>
-
-    <script src="./app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

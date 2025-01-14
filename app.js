@@ -1,15 +1,3 @@
-// Configure AWS Amplify //this will be read from aws aplify config in lateer versions
-aws_amplify.default.configure({
-    Auth: {
-        // Replace with your Cognito User Pool details
-        userPoolId: "us-east-1_Re0MdnRiV",
-        userPoolWebClientId: "1j1ja164ehv7iuelpu032q3g6r", // Replace with your App Client ID
-        region: "us-east-1",
-    }
-});
-
-const Auth = aws_amplify.Auth;
-
 // Get references to elements
 const form = document.getElementById('auth-form');
 const formTitle = document.getElementById('form-title');
@@ -21,111 +9,21 @@ const passwordInput = document.getElementById('password');
 const passwordConfirmationInput = document.getElementById('password-confirmation');
 const usernameInput = document.getElementById('username');
 
-// Sign Up Function
-async function signUp() {
-  
-    const username = document.getElementById("signup-username").value;
-    const password = document.getElementById("signup-password").value;
-    const email = document.getElementById("signup-email").value;
-    const birthdate = document.getElementById("signup-birthdate").value;
-    const given_name = document.getElementById("signup-name").value;
-    const name = document.getElementById("signup-given_name").value;
-    const phone_number = document.getElementById("signup-phone_number").value;
-    const gender = document.getElementById("signup-gender").value;
-    if(username === "" || password === "" || email === "" || birthdate === "" || given_name === "" || name === "" || phone_number   === ""){
-        return;
-    }
-    try {
-        await Auth.signUp({
-            username,
-            password,
-            attributes: { name, email,birthdate,gender, phone_number, given_name },
-        });
-        alert("Sign-up successful! Please check your email for the confirmation code.");
-        toggleText.display = "none";
-        document.getElementById("signup").style.display = "none";
-        document.getElementById("confirm-signup").style.display = "block";
-    } catch (error) {
-        alert(`Error signing up: ${error.message}`);
-    }
-}
-
-// Confirm Sign Up Function
-async function confirmSignUp() {
-  
-    const username = document.getElementById("confirm-username").value;
-    const code = document.getElementById("confirm-code").value;
-    if(username === "" || code === ""){
-        return;
-    }
-
-    try {
-        await Auth.confirmSignUp(username, code);
-        alert("Confirmation successful! You can now sign in.");
-        document.getElementById("confirm-signup").style.display = "none";
-        document.getElementById("signin").style.display = "block";
-    } catch (error) {
-        alert(`Error confirming sign up: ${error.message}`);
-    }
-}
-
-// Sign In Function
-async function signIn() {
-    
-    const username = document.getElementById("signin-username").value;
-    const password = document.getElementById("signin-password").value;
-    if(username === "" || password === ""){
-        return;
-    }
-
-    try {
-        const user = await Auth.signIn(username, password);
-        console.log(user.username);
-        document.getElementById("signin").style.display = "none";
-        sessionStorage.setItem('userId', user.username);
-        sessionStorage.setItem('userFullName', user.attributes.given_name);
-        sessionStorage.setItem('sessionId', user.signInUserSession.idToken.jwtToken);
-        window.location.href = "chronicles.html";
-       
-    } catch (error) {
-    if (error.message.includes('Network')) {
-        alert('System error oocured, please try again later');
-        document.getElementById("signup").style.display = "none";
-        document.getElementById("signin").style.display = "block";
-    } else {       
-        alert(`Error signing in: ${error.message}`);
-    }
-    }
-}
-
-// Sign Out Function
-async function signOut() {
-    try {
-        await Auth.signOut();
-        document.getElementById("welcome").style.display = "none";
-        document.getElementById("signin").style.display = "block";
-    } catch (error) {
-        alert(`Error signing out: ${error.message}`);
-    }
-}
-
 // Toggle between Sign Up and Sign In
 let isSignIn = false;
 
 toggleText.addEventListener('click', function() {
-    
     isSignIn = !isSignIn;
     if (isSignIn) {
-        document.getElementById("signup").style.display = "none";
-        document.getElementById("signin").style.display = "block";
         formTitle.textContent = 'Sign In';
-      
+        passwordConfirmationContainer.style.display = 'none';  // Hide the password confirmation field
+        passwordConfirmationInput.removeAttribute('required');  // Remove the 'required' attribute
+        passwordConfirmationInput.value = '';  // Clear the password confirmation input
         toggleText.textContent = 'Don\'t have an account? Sign Up';
     } else {
         formTitle.textContent = 'Sign Up';
-        document.getElementById("signin").style.display = "none";
-        document.getElementById("signup").style.display = "block";
-       
+        passwordConfirmationContainer.style.display = 'block';  // Show the password confirmation field
+        passwordConfirmationInput.setAttribute('required', 'required');  // Add the 'required' attribute
         toggleText.textContent = 'Already have an account? Sign In';
     }
     errorMessage.textContent = '';
@@ -133,3 +31,71 @@ toggleText.addEventListener('click', function() {
     form.reset();
 });
 
+function generateGUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+// Handle form submission (either sign up or sign in)
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    const passwordConfirmation = passwordConfirmationInput.value;
+
+    // Reset messages
+    errorMessage.textContent = '';
+    successMessage.textContent = '';
+
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    if (isSignIn) {
+        // Sign In
+        const existingUser = users.find(user => user.username === username);
+        if (!existingUser) {
+            errorMessage.textContent = 'Username not found!';
+            return;
+        }
+
+        if (existingUser.password !== password) {
+            errorMessage.textContent = 'Incorrect password!';
+            return;
+        }
+
+        sessionStorage.setItem('userId', users.username);
+        sessionStorage.setItem('userFullName', users.username);
+        
+
+        const sessionId = generateGUID();
+        sessionStorage.setItem('sessionId', sessionId);
+
+        successMessage.textContent = 'Sign In successful!';
+        window.location.href = "chronicles.html";
+    } else {
+        // Sign Up
+        const existingUser = users.find(user => user.username === username);
+        if (existingUser) {
+            errorMessage.textContent = 'User is already registered!';
+            return;
+        }
+
+        if (password !== passwordConfirmation) {
+            errorMessage.textContent = 'Passwords do not match!';
+            return;
+        }
+
+        // Save the new user
+        users.push({ username, password });
+        localStorage.setItem('users', JSON.stringify(users));
+        successMessage.textContent = 'Registration successful! Please Sign In.';
+        form.reset();
+        toggleText.textContent = 'Already have an account? Sign In';
+        isSignIn = true;
+        formTitle.textContent = 'Sign In';
+        passwordConfirmationContainer.style.display = 'none';  // Hide the password confirmation field
+        passwordConfirmationInput.removeAttribute('required');  // Remove the 'required' attribute
+    }
+});
