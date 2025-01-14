@@ -4,10 +4,58 @@ let worldMap = []; // Initialize with terrain data once it's loaded
 let player = null; // Initialize with player data once it's loaded
 let imaginaryWorld = "fantasy"; // Default to fantasy world
 
-// Find the healingPotion count
-const healingPotion = player?.inventory.find(item => item.name === 'healingPotion');
-const healingPotionCount = healingPotion ? healingPotion.count : 0;
-document.getElementById('healing-potion-count').innerText = `Healing posion Count= ${healingPotionCount}`;
+let fishingRodsCount = 0;
+let rareGemsCount = 0;
+let healingPotionCount = 0;
+let goldCount = 0;
+const receivedString = sessionStorage.getItem("uid");
+
+// Initialize timer to 10 minutes (600 seconds)
+let timeLeft = 600;  // 10 minutes in seconds
+let experiencesCount = 0;
+
+// Mock items for player inventory
+player = {
+    name: "player123",
+    activeQuests: [],
+    inventory: [
+         'Healing Potion',
+         'Healing Potion' ,
+         'Fishing Rod',
+         'Rare Gem',
+    ],
+    position: { x: 0, y: 0 },
+    experience: 20,
+    gold: 100
+};
+
+
+
+// Function to start and update the timer
+function startTimer() {
+    const timerDisplay = document.getElementById("time-left");
+    
+    const interval = setInterval(() => {
+        // Convert timeLeft to minutes and seconds
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        // Format the timer to always show two digits
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        // Decrease time left by 1 second
+        timeLeft--;
+
+        // When time runs out, refresh the page
+        if (timeLeft < 0) {
+            clearInterval(interval); // Stop the timer
+            alert("TimeUP!!!.");
+            location.reload(); // Refresh the page
+        }
+    }, 1000); // Update every second
+}
+         
+initializeGameRewards();
 
 //  Function to call the generateTerrain Lambda function
 async function fetchGeneratedTerrain(player, imaginaryWorld) {
@@ -39,6 +87,9 @@ async function fetchGeneratedTerrain(player, imaginaryWorld) {
         currentPlayerY = data.playerY;
         worldMap = data.terrain;
         initializeGame(worldMap);
+        
+        // Start the timer when the page is loaded
+        startTimer()
         
 
     } catch (error) {
@@ -160,6 +211,7 @@ document.addEventListener("keydown", (event) => {
         function logMessageToPopup(message) {
             // Create a new paragraph element for the message
             const messageElement = document.createElement("p");
+       
             messageElement.textContent = message;
     
             // Append the new message
@@ -292,15 +344,15 @@ function triggerEventBasedOnTerrain(tile) {
      }
      else if(tile.type === "water") 
      {
-                 logMessageToPopup("You are swimming!");
+                 logMessageToPopup("You are swimming! Your current position is (" + currentPlayerX + " " + currentPlayerY + ")");
      }
      else if(tile.type === "mountain") 
      {
-                 logMessageToPopup("You are climbing a mountain!");
+                 logMessageToPopup("You are climbing a mountain! Your current position is (" + currentPlayerX + " " + currentPlayerY + ")");
      }
      else 
      {
-                 logMessageToPopup("You are walking on grass.");
+                 logMessageToPopup("You are walking on grass! Your current position is (" + currentPlayerX + " " + currentPlayerY + ")");
      }
      checkForQuestCompletion(player);
      console.log("Player's Active Quests Count:", player.activeQuests.length);
@@ -323,7 +375,25 @@ function checkForQuestCompletion(player) {
             player.gold += quest.rewards.gold;
             logMessageToPopup(`You received ${quest.rewards.gold} gold and ${quest.rewards.experience} experience.`);
         }
+        showAssignedQuests();
 }});
+ initializeGameRewards();
+
+}
+
+function initializeGameRewards()
+{
+    goldCount= player?.gold||0;
+    experiencesCount= player?.experience||0;
+    healingPotionCount= player?.inventory.filter(item => item === 'Healing Potion').length || 0;
+    fishingRodsCount= player?.inventory.filter(item => item === 'Fishing Rod').length || 0;
+    rareGemsCount= player?.inventory.filter(item => item === 'Rare Gem').length || 0;
+    $('#healing-potion-count').text(`Healing posion Count= ${healingPotionCount}`);
+    $('#fishing-rods-count').text(`Fishing Rods Count= ${fishingRodsCount}`);
+    $('#rare-gems-count').text(`Rare Gems Count= ${rareGemsCount}`);
+    $('#gold-count').text(`Gold Count= ${goldCount}`);
+    $('#experiences-count').text(`Experiences= ${experiencesCount}`);
+
 }
 
 function logMessageToPopup(message, showQuestButtons = false, questCallback = null) {
@@ -353,6 +423,9 @@ function logMessageToPopup(message, showQuestButtons = false, questCallback = nu
         acceptButton.onclick = () => {
             if (questCallback) questCallback("accepted");
             logMessageToPopup("You accepted the quest!");
+            acceptButton.setAttribute('disabled', false);
+            declineButton.setAttribute('disabled', false);
+            showAssignedQuests();
         };
 
         // Decline button
@@ -361,7 +434,22 @@ function logMessageToPopup(message, showQuestButtons = false, questCallback = nu
         declineButton.onclick = () => {
             if (questCallback) questCallback("declined");
             logMessageToPopup("You declined the quest.");
-        };
+            acceptButton.setAttribute('disabled', false);
+            declineButton.setAttribute('disabled', false);
+        };       
+        function handleKeyPress(event) {
+            
+            // Check if the quest is still active
+            if (event.key === "Escape" || event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                
+                acceptButton.setAttribute('disabled', false);
+                declineButton.setAttribute('disabled', false);
+            }
+        }
+        
+        // Attach the event listener for keydown event
+        document.addEventListener("keydown", handleKeyPress);
+        
 
         buttonContainer.appendChild(acceptButton);
         buttonContainer.appendChild(declineButton);
@@ -371,6 +459,17 @@ function logMessageToPopup(message, showQuestButtons = false, questCallback = nu
     }
   // Scroll to the bottom for the latest message
     consolePopup.scrollTop = consolePopup.scrollHeight;
+}
+
+function showAssignedQuests() {
+    const questContainer = document.getElementById("game-quests-assigned");
+    questContainer.innerHTML = ""; // Clear previous quests
+
+    player.activeQuests.forEach((quest) => {
+        const questElement = document.createElement("div");
+        questElement.textContent = quest.description;
+        questContainer.appendChild(questElement);
+    });
 }
 
 function saveGameState() {
@@ -465,7 +564,49 @@ document.getElementById("generate-terrain-button").addEventListener("click", asy
     
     await fetchGeneratedTerrain(player, imaginaryWorld);
     $('#game-action-pannel').show();
+    $('#game-log-pannel').show();
 });
+
+document.getElementById("resume-terrain-button").addEventListener("click", async () => {
+
+    // Flash tiles with quests for 5 seconds
+    const questTiles = [];
+    worldMap.forEach((row, x) => {
+        row.forEach((tile, y) => {
+            if (tile.hasQuest) {
+                questTiles.push({ x, y });
+                const tileDiv = document.querySelector(`.row:nth-child(${x + 1}) .tile:nth-child(${y + 1})`);
+                if (tileDiv) {
+                    tileDiv.classList.add("flash");
+                }
+            }
+        });
+    });
+
+    // Remove flash effect after 5 seconds
+    setTimeout(() => {
+        questTiles.forEach(({ x, y }) => {
+            const tileDiv = document.querySelector(`.row:nth-child(${x + 1}) .tile:nth-child(${y + 1})`);
+            if (tileDiv) {
+                tileDiv.classList.remove("flash");
+            }
+        });
+    }, 1000);
+
+    // Add CSS for flashing effect
+    const flashStyle = document.createElement('style');
+    flashStyle.innerHTML = `
+        .flash {
+            animation: flash-animation 1s infinite;
+        }
+        @keyframes flash-animation {
+            0%, 100% { background-color: yellow; }
+            50% { background-color: red; }
+        }
+    `;
+    document.head.appendChild(flashStyle);
+});
+
 
 function doSelection(){
     imaginaryWorld = $('input[name="worldType"]:checked').val();

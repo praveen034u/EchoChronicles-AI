@@ -48,7 +48,7 @@
             font-size: 14px;
             padding: 10px;
             box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.5);
-            max-height: 400px; 
+            max-height: 200px; 
             overflow-y: auto;
             z-index: 1000;
         }
@@ -68,6 +68,10 @@
       
     </style>
 </head>
+<div id="timer-display" style="position: fixed; top: 1px; right: 20px; font-size: 18px; background-color: rgba(0, 0, 0, 0.8); 
+color: white; padding: 1px; border-radius: 5px;">
+    Time Left: <span id="time-left">10:00</span>
+</div>
 
 <body>
     <div id="terrain-title" style="text-align: center; font-size: 28px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 20px;">
@@ -105,11 +109,11 @@
         <div style="display: flex; justify-content: space-around; flex-wrap: wrap; border: 1px solid rgb(118, 158, 133);">
             <div style="text-align: center; margin: 10px;">
             <img src="./assets/rewards/gold1.jpeg" alt="gold" style="width: 80px; height: 80px;">
-            <div>Gold Count= 0</div>
+            <div id="gold-count">Gold Count= 0</div>
             </div>
             <div style="text-align: center; margin: 10px;">
             <img src="./assets/rewards/rareGem.jpeg" alt="Rare Gems" style="width: 80px; height: 80px;">
-            <div>Rare Gems Count= 0</div>
+            <div id="rare-gems-count">Rare Gems Count= 0</div>
             </div>
             <div style="text-align: center; margin: 10px;">
             <img src="./assets/rewards/healingPotion1.jpeg" alt="Healing posion" style="width: 80px; height: 80px;">
@@ -117,27 +121,34 @@
             </div>
             <div style="text-align: center; margin: 10px;">
             <img src="./assets/rewards/fishingRod.png" alt="Fishing Rods" style="width: 80px; height: 80px;">
-            <div>Fishing Rods Count= 0</div>
+            <div id="fishing-rods-count">Fishing Rods Count= 0</div>
             </div>
             <div style="text-align: center; margin: 10px;">
             <img src="./assets/rewards/experiences.png" alt="Experiences" style="width: 80px; height: 80px;">
-            <div>Experiences Count= 0</div>
+            <div id="experiences-count">Experiences= 0</div>
             </div>
         </div>
             </div>
-            <div id="game-action-pannel" style="padding-top: 20px; ">
+            <div id="game-action-pannel" style="padding-top: 20px; display: none; ">
                 <div style="font-size: 16px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 10px;">
                     Game Action:
                 </div>
-                    <button id="generate-terrain-button">Save the Current Game</button>
-                    <button id="generate-terrain-resume-button">Exit the Game</button>
-                    <button id="generate-terrain-resume-button">Flash the Quest tiles</button>
+                    <button id="save-terrain-button">Save the Current Game</button>
+                    <button id="exit-terrain-button">Exit the Game</button>
+                    <button id="resume-terrain-button">Flash the Quest tiles</button>
             </div> 
-            <div id="game-log-pannel" style="padding-top:20px">
+            <div id="game-log-pannel" style="padding-top:20px;display:none;">
                 <div style="font-size: 16px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 10px;">
                     Game Log:
                     <div id="console-popup"></div>
                 </div>
+            </div> 
+            <div id="game-quests-pannel" style="padding-top:20px;">
+                <div style="font-size: 16px; font-weight: bold; color: rgb(0, 102, 204); margin-bottom: 10px;">
+                    Your assigned quests:
+                </div>
+                <div id="game-quests-assigned"></div>
+               
             </div> 
     </div>
     </div>
